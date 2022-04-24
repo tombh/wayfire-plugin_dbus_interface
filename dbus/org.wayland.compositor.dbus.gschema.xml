@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="gsettings-desktop-schemas">
+  <schema id="org.wayland.compositor.dbus" path="/org/wayland/compositor/dbus/">
+    <key type="b" name="geometry-signal">
+      <default>false</default>
+      <summary>geometry-signal</summary>
+      <description>geometry-signal</description>
+    </key>
+    <key type="s" name="startup-notify">
+      <default>""</default>
+      <summary>Command that runs on session startup</summary>
+      <description>Command that runs on session startup</description>
+    </key>    
+  </schema>
+</schemalist>

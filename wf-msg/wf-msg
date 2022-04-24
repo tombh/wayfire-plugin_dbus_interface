@@ -1,0 +1,168 @@
+#!/usr/bin/env bash
+
+subcommand=$1
+shift
+
+trap "exit 1" TERM
+export TOP_PID=$$
+
+function _timestamp {
+	date "+%Y-%m-%d %H:%M:%S"
+}
+
+function _error {
+	local message="$1"
+	local caller=${FUNCNAME[1]}
+	local prefix
+	prefix="$(_timestamp) WF-MSG  |ERROR: $caller()"
+	# shellcheck disable=2001
+	echo "$message" | sed "s/.*/$prefix &/" 1>&2
+	kill -s TERM "$TOP_PID"
+}
+
+function _debug {
+	if true; then
+		echo "$(_timestamp) WF-MSG  |DEBUG: $1" 1>&2
+	fi
+}
+
+function _join_by {
+	local d=${1-} f=${2-}
+	if shift 2; then
+		printf %s "$f" "${@/#/$d}"
+	fi
+}
+
+function extract_numbers {
+	sed \
+		-e 's/uint32//g' \
+		-e 's/[^0-9]/ /g' |
+		trim
+}
+
+function clean {
+	sed \
+		-e "s/^()$//g" \
+		-e "s/^(['\"]//g" \
+		-e "s/['\"],)$//g" \
+		-e "s/^(//g" \
+		-e "s/,)$//g"
+}
+
+function trim {
+	xargs echo -n
+}
+
+function wf-call {
+	local method=$1
+	shift
+	local args=("$@")
+
+	local args_with_commas
+	local result
+
+	args_with_commas=$(_join_by , "${args[@]}")
+	_debug "Calling DBUS $method($args_with_commas)"
+
+	dbus_args=(
+		call
+		--session
+		--dest org.wayland.compositor
+		--object-path /org/wayland/compositor
+		--method org.wayland.compositor."$method"
+	)
+
+	[ ${#args[@]} -gt 0 ] && dbus_args+=("${args[@]}")
+
+	result=$(gdbus "${dbus_args[@]}" 2>&1)
+	test $? -eq 0 || _error "$result"
+
+	echo "$result"
+}
+
+function get_all_windows {
+	read -ra wids <<<"$(get_all_window_ids)"
+	last=${wids[-1]}
+	echo -n '['
+	for wid in "${wids[@]}"; do
+		echo -n '{'
+		echo -n '"id": "'"$wid"'",'
+		echo -n '"app": "'"$(get_window_app "$wid")"'",'
+		echo -n '"title": "'"$(get_window_title "$wid")"'"'
+		echo -n '}'
+		[[ "$wid" != "$last" ]] && echo -n ','
+	done
+	echo -n ']'
+}
+
+function get_all_window_ids {
+	wf-call query_view_vector_taskman_ids | extract_numbers
+}
+
+function get_window_title {
+	local window_id=$1
+	wf-call query_view_title "$window_id" | clean
+}
+
+function get_window_app {
+	local window_id=$1
+	wf-call query_view_app_id "$window_id" | clean
+}
+
+function get_current_output {
+	wf-call query_active_output | extract_numbers
+}
+
+function get_current_workspace {
+	wf-call query_output_workspace "$(get_current_output)" |
+		extract_numbers
+}
+
+function maximize_window {
+	local window_id=$1
+	wf-call maximize_view "$window_id" 1 | clean | trim
+}
+
+function unmaximize_window {
+	local window_id=$1
+	wf-call maximize_view "$window_id" 0 | clean | trim
+}
+
+function minimize_window {
+	local window_id=$1
+	wf-call minimize_view "$window_id" 1 | clean | trim
+}
+
+function unminimize_window {
+	local window_id=$1
+	wf-call minimize_view "$window_id" 0 | clean | trim
+}
+
+function focus_window {
+	local window_id=$1
+	wf-call focus_view "$window_id" 1 | clean | trim
+}
+
+function unfocus_window {
+	local window_id=$1
+	wf-call focus_view "$window_id" 0 | clean | trim
+}
+
+function move_window_to_workspace {
+	local window_id=$1
+	workspace_x="$2"
+	workspace_y="$3"
+	wf-call change_workspace_view "$window_id" "$workspace_x" "$workspace_y" | clean | trim
+}
+
+function get_window_workspace {
+	local window_id=$1
+	wf-call query_view_workspaces "$window_id" | extract_numbers | trim
+}
+
+function is_window_active {
+	local window_id=$1
+	wf-call query_view_active "$window_id" | clean | trim
+}
+
+"$subcommand" "$@"
