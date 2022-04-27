@@ -44,8 +44,9 @@ function __BAPt_parse_arguments {
 	parts="$(echo "$parsed" | sed 's/ -- /\n/' | sed 's/ --$/\n/')"
 	parts1=$(echo "$parts" | sed -n 1p)
 	parts2=$(echo "$parts" | sed -n 2p)
+	[[ $parts2 = "''" ]] && parts2=""
 
-	if [[ $(echo "$parts1" | tr -d ' ') = "--help:flag" ]]; then
+	if [[ $(echo "$parts1" | tr -d ' ') = "--help" ]]; then
 		__BAPt_show_usage "$usage" 0
 	fi
 
@@ -161,6 +162,8 @@ function __BAPt_get_option_definitions {
 		key="${key//--/}"
 		if [[ ! $key =~ ":flag" ]]; then
 			key="$key:"
+		else
+			key="${key//:flag/}"
 		fi
 		option_defs_array+=("$key")
 	done
@@ -187,7 +190,7 @@ function __BAPt_parse_positional_args {
 
 	if [[ ${#positionals[@]} -ne $arity ]]; then
 		echo "$__BAPt_ERROR_PREFIX: Expected $arity got ${#positionals[@]}" >&2
-		echo
+		echo >&2
 		return 1
 	fi
 }

@@ -10,11 +10,21 @@ function _includes_path {
 	dirname "$(readlink -f "$0")"
 }
 
+function _load_arg_parser_from_wf_msg {
+	local wf_msg_path
+	wf_msg_path=$(
+		dirname "$(readlink -f "$(which wf-msg)")"
+	)
+	# shellcheck disable=1091
+	source "$wf_msg_path/_bash_args_parser.bash"
+}
+
 function _load_includes {
 	for file in "$(_includes_path)"/*.bash; do
 		# shellcheck disable=1090
 		source "$file"
 	done
+	_load_arg_parser_from_wf_msg
 }
 
 _load_includes

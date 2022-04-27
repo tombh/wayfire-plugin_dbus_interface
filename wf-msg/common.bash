@@ -1,4 +1,4 @@
-# shellcheck shell=bash
+# shellcheck shell=bash disable=2120
 
 function wf-call {
 	local method=$1
@@ -21,8 +21,9 @@ function wf-call {
 
 	[ ${#args[@]} -gt 0 ] && dbus_args+=("${args[@]}")
 
-	result=$(gdbus "${dbus_args[@]}" 2>&1)
-	test $? -eq 0 || _error "$result"
-
-	echo "$result"
+	if ! result=$(gdbus "${dbus_args[@]}" 2>&1); then
+		_error "$result"
+	else
+		echo "$result"
+	fi
 }

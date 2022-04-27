@@ -1,1 +1,1 @@
-# shellcheck shell=bash
+# shellcheck shell=bash disable=2120

@@ -1,5 +1,7 @@
 # shellcheck shell=bash
 
+__WF_MSG_WINDOW_ID_DESCRIPTION="Window ID. See something like 'get_all_window_ids'"
+
 function _timestamp {
 	date "+%Y-%m-%d %H:%M:%S"
 }
