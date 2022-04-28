@@ -30,6 +30,19 @@ function __BAPt_parse_arguments {
 	# rather than a copy of $_arg_defs.
 	usage=$(__BAPt_build_usage _arg_defs)
 
+	if [[ ${parent_args[*]} = "--help" ]]; then
+		__BAPt_show_usage "$usage" 0
+	fi
+
+	if [[ -n ${_arg_defs[any]} ]]; then
+		if [[ -z ${parent_args[*]} ]]; then
+			echo "$__BAPt_ERROR_PREFIX: arguments expected" 1>&2
+			echo 1>&2
+			__BAPt_show_usage "$usage" 1
+		fi
+		return 0
+	fi
+
 	option_definitions=$(__BAPt_get_option_definitions _arg_defs)
 	if ! parsed=$(
 		getopt \
@@ -45,10 +58,6 @@ function __BAPt_parse_arguments {
 	parts1=$(echo "$parts" | sed -n 1p)
 	parts2=$(echo "$parts" | sed -n 2p)
 	[[ $parts2 = "''" ]] && parts2=""
-
-	if [[ $(echo "$parts1" | tr -d ' ') = "--help" ]]; then
-		__BAPt_show_usage "$usage" 0
-	fi
 
 	if ! __BAPt_parse_positional_args _arg_defs "$parts2"; then
 		__BAPt_show_usage "$usage" 1
@@ -90,6 +99,10 @@ function __BAPt_build_usage {
 		if [[ $key =~ ^[0-9]: ]]; then
 			arg_list[$index]="$name"
 			positionals[$index]=$line
+		fi
+		if [[ $key = any ]]; then
+			arg_list[0]="[ARGUMENTS]"
+			positionals[0]=$line
 		fi
 		if [[ $key =~ ^-- ]]; then
 			options+=("$line")
