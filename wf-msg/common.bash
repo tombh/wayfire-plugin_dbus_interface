@@ -1,6 +1,20 @@
 # shellcheck shell=bash disable=2120
 
 function wf-call {
+	local _
+	declare -A _=(
+		[summary]="Make a call to Wayfire's D-Bus interface"
+		[details]="$(
+			cat <<-EOM
+				To see all the available commands and arguments, use:
+
+				  \`wf-msg wf-dbus-introspect\`
+			EOM
+		)"
+		[any]="Arguments to Wayfire D-Bus interface"
+	)
+	__BAPt_parse_arguments _ "$@"
+
 	local method=$1
 	shift
 	local args=("$@")
@@ -26,4 +40,20 @@ function wf-call {
 	else
 		echo "$result"
 	fi
+}
+
+function wf-dbus-introspect {
+	local _
+	declare -A _=(
+		[summary]="Returns XML of all the available Wayfire D-Bus methods and signals"
+	)
+	__BAPt_parse_arguments _ "$@"
+
+	dbus-send \
+		--session \
+		--type=method_call \
+		--print-reply \
+		--dest=org.wayland.compositor \
+		/org/wayland/compositor \
+		org.freedesktop.DBus.Introspectable.Introspect
 }
