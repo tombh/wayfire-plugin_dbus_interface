@@ -67,14 +67,27 @@ function is_window_active {
 	wf-call query_view_active "${args[window_id]}" | _o_boolean
 }
 
-# TODO: This is slow because each window generates multiple extra calls to get its details
 function get_all_windows {
-	local _
-	declare -A _=(
+	local args json
+	declare -A args=(
 		[summary]="Get the full details of all current windows"
+		[--use-cache:flag]="Use cached results, or create cache if it doesn't already exist"
 	)
-	__BAPt_parse_arguments _ "$@"
+	__BAPt_parse_arguments args "$@"
 
+	local cache_name="get_all_windows"
+	if [[ -n ${args[use-cache]} ]]; then
+		if json=$(_get_cache "$cache_name"); then
+			echo "$json"
+			return 0
+		fi
+	fi
+	json=$(_json_all_windows)
+	_create_cache "$cache_name" "$json"
+	echo "$json"
+}
+
+function _json_all_windows {
 	_json_array "$(
 		read -ra wids <<<"$(get_all_window_ids)"
 		for wid in "${wids[@]}"; do

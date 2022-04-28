@@ -61,3 +61,37 @@ function _json_array {
 	local objects="$1"
 	echo -n "$objects" | _json_rm_trailing_comma | sed 's/.*/[&],/'
 }
+
+function _cache_path {
+	local name=$1
+	[[ -z $name ]] && _error "No cache name provided"
+	echo "$(_ensure_cache_setup)/$name"
+}
+
+function _get_cache {
+	local name=$1
+	local path
+	path="$(_cache_path "$name")"
+	if [[ -f "$path" ]]; then
+		_debug "Returning cache for $name"
+		cat "$path"
+	else
+		return 1
+	fi
+}
+
+function _create_cache {
+	local name=$1
+	local contents=$2
+	local path
+
+	_debug "Creating cache for $name"
+	path="$(_cache_path "$name")"
+	echo "$contents" >"$path"
+}
+
+function _ensure_cache_setup {
+	local path="/tmp/wf-msg"
+	mkdir -p "$path"
+	echo "$path"
+}
