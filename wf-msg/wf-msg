@@ -2,8 +2,7 @@
 
 trap "exit 1" TERM
 export _TOP_PID=$$
-
 _INCLUDES_PATH=$(dirname "$(readlink -f "$0")")
-source "$_INCLUDES_PATH/_internal.bash"
+source "$_INCLUDES_PATH/_lib.bash"
 
 _init "$@"

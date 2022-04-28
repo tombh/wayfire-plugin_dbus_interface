@@ -6,7 +6,7 @@ function peek_titled_window {
 		[summary]="Find a window and bring it to the current workspace"
 		[details]="$(cat <<-EOM
 			Note that the window will be automatically minimised once
-			it's unfoccused. So this functionality is for when you want
+			it's unfocussed. So this functionality is for when you want
 			something like a "popup" window, say a terminal to enter a
 			quick command.
 

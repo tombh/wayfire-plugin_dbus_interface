@@ -33,7 +33,7 @@ function find_titled_window {
 		) | .id
 	"
 
-	_debug "query: $(echo "$query" | _trim)"
+	_debug "jq query: $(echo "$query" | _trim)"
 	match=$(_wf-msg get_all_windows | _jq "$query" | head -n1)
 
 	if [[ -z $match ]]; then

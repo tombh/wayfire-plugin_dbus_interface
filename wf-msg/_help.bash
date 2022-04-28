@@ -20,6 +20,8 @@ function _echo_usage_title {
 	# shellcheck disable=2154
 	echo "Usage: $__BAPt_SCRIPT_NAME [SUBCOMMAND] [--help]"
 	echo
+	echo "$_PROGRAM_DESCRIPTION"
+	echo
 }
 
 function _echo_subcommands {
@@ -54,8 +56,9 @@ function _get_contents_of_function {
 function _summary {
 	local body=$1
 	local summary
+	local regex="s/.*\[summary\]=[\"']\([^\"']*[^\"']\)[\"'].*/\1/p"
 	summary=$(
-		echo "$body" | grep summary | sed -n 's/.*\[summary\]="\([^"]*\).*/\1/p'
+		echo "$body" | grep summary | sed -n "$regex"
 	)
 	echo "$summary"
 }
