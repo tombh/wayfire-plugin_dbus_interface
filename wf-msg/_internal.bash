@@ -2,6 +2,50 @@
 
 __WF_MSG_WINDOW_ID_DESCRIPTION="Window ID. See something like 'get_all_window_ids'"
 
+function _includes_path {
+	dirname "$(readlink -f "$0")"
+}
+
+function _load_includes {
+	for file in "$(_includes_path)"/*.bash; do
+		# shellcheck disable=1090
+		source "$file"
+	done
+}
+
+function _is_function {
+	local suspect=$1 cleaned
+	# shellcheck disable=2001
+	cleaned=$(echo "$suspect" | sed 's/^-*//')
+	if [[ $(type -t "$cleaned") != function ]]; then
+		return 1
+	fi
+}
+
+function _init {
+	local subcommand=$1
+	shift
+
+	local args=("$@")
+
+	_load_includes
+
+	if [[ "$subcommand" = "--help" ]]; then
+		_help
+		exit 0
+	fi
+
+	if ! _is_function "$subcommand"; then
+		# shellcheck disable=2154
+		echo "$__BAPt_ERROR_PREFIX: Unknown subcommand" 2>&1
+		echo 2>&1
+		_help
+		exit 1
+	fi
+
+	"$subcommand" "${args[@]}"
+}
+
 function _timestamp {
 	date "+%Y-%m-%d %H:%M:%S"
 }
@@ -13,7 +57,7 @@ function _error {
 	prefix="$(_timestamp) WF-MSG  |ERROR: $caller()"
 	# shellcheck disable=2001
 	echo "$message" | sed "s/.*/$prefix &/" 1>&2
-	kill -s TERM "$TOP_PID"
+	kill -s TERM "$_TOP_PID"
 }
 
 function _debug {
