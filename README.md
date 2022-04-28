@@ -2,33 +2,66 @@
 This allows you to have very fine-grained control of Wayfire from the CLI. At its most basic it can manipulate windows eg; move, minimize, resize and close them. However it can also query current properties, or subscribe to changes, about; windows, workspaces and outputs. Together these tools can be used to create some powerful functionality.
 
 
-### D-Bus
+### D-Bus interface
 The [D-Bus plugin](https://github.com/damianatorrpm/wayfire-plugin_dbus_interface) is here for now because at the time it wasn't building against current Wayfire and needs an unmerged PR to get it working. I'll remove the D-Bus code once its working upstream again.
 
 ### `wf-msg`
 Inspired by SwayWM's [swaymsg](https://github.com/swaywm/sway/blob/master/swaymsg/swaymsg.1.scd). Talks to the D-Bus plugin.
 
-### `wf-utils`
-A collection of ready-made utilities that make use of `wf-msg`
+```
+Usage: wf-msg [SUBCOMMAND] [--help]
 
+Control Wayfire from the CLI
+
+Subcommands:
+  focus_window             Focus the given window
+  get_all_window_ids       Get the IDs of all the current windows
+  get_all_windows          Get the full details of all current windows
+  get_current_output       Get the ID of the current output (usually a physical monitor)
+  get_current_workspace    Get the X,Y coords of the current workspace on the current output
+  get_window_app           Get the application that launched the given window
+  get_window_title         Get the title of the given window
+  get_window_workspace     Get the X,Y coords of the given window
+  is_window_active         Is the given window ID active? (I think that means focussed)
+  maximize_window          Maximize the given window
+  minimize_window          Minimize the given window
+  move_window_to_workspace Move the given window to the given workspace
+  unfocus_window           Return window to focus state before previous focus
+  unmaximize_window        Reize window to size before previous maximization
+  unminimize_window        Resize window to size before previous minimization
+  wf-call                  Make a call to Wayfire
+  wf-dbus-introspect       Returns XML of all the available Wayfire D-Bus methods and signals
+
+Options:
+  --help                   Show this help
+```
+
+### `wf-utils`
+```
+Usage: wf-utils [SUBCOMMAND] [--help]
+
+Collection of general utilities for controling Wayfire
+
+Subcommands:
+  find_titled_window               Find a window by searching for its name and title. Returns window ID
+  minimize_window_on_unfocus       Minimise a window once it becomes unfoccused
+  move_titled_window_to_workspace  Find a window by its app and title then move it to a workspace
+  move_window_to_current_workspace Move window to current workspace
+  peek_titled_window               Find a window and bring it to the current workspace
+
+Options:
+  --help                           Show this help
+```
 
 I'd hope that `wf-msg` and `wf-utils` could find a home in either the [D-Bus plugin](https://github.com/damianatorrpm/wayfire-plugin_dbus_interface) repo or even Wayfire's own [wayfire-plugins-extra](https://github.com/WayfireWM/wayfire-plugins-extra) repo
 
 
 ## Requirements
-
-	* [wayfire-plugins-extra](https://github.com/WayfireWM/wayfire-plugins-extra)
-  * `jq` https://stedolan.github.io/jq/download
+* [wayfire-plugins-extra](https://github.com/WayfireWM/wayfire-plugins-extra)
+* [`jq`](https://stedolan.github.io/jq/download)
 
 
 ## Install
+* AUR package TBD
+* `make && make install`
 
-  * AUR package TBD
-	* `make && make install`
-
-
-## `wf-utils` usage
-TBC
-
-## `wf-msg` usage
-TBC
