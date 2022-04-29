@@ -53,6 +53,9 @@ function find_titled_window {
 
 function _double_check_window_title {
 	local window_id=$1 titlish=$2 actual_title
+	if [[ -z $window_id	]]; then
+		return 1
+	fi
 
 	actual_title=$(wf-msg get_window_title "$window_id")
 	_debug "$titlish =~ $actual_title"

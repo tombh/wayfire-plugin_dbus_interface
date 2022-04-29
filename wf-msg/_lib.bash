@@ -54,11 +54,15 @@ function _timestamp {
 function _error {
 	local message="$1"
 	local caller=${FUNCNAME[1]}
-	local prefix
-	prefix="$(_timestamp) $_LOG_IDENTIFIER  |ERROR: $caller()"
+	local prefix=""
+
+	if [[ $DEBUG = 1 ]]; then
+		prefix="$(_timestamp) $_LOG_IDENTIFIER  |ERROR: $caller() "
+	fi
 	# shellcheck disable=2001
-	echo "$message" | sed "s/.*/$prefix &/" 1>&2
+	echo "$message" | sed "s/.*/$prefix&/" 1>&2
 	kill -s TERM "$_TOP_PID"
+	exit 1
 }
 
 function _debug {
