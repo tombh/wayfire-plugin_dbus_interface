@@ -7,7 +7,7 @@ function maximize_window {
 		[0:window_id]="$__WF_MSG_WINDOW_ID_DESCRIPTION"
 	)
 	__BAPt_parse_arguments args "$@"
-	wf-call maximize_view "${args[window_id]}" 1 | _o_none
+	dbus-method maximize_view "${args[window_id]}" 1 | _o_none
 }
 
 function unmaximize_window {
@@ -17,7 +17,7 @@ function unmaximize_window {
 		[0:window_id]="$__WF_MSG_WINDOW_ID_DESCRIPTION"
 	)
 	__BAPt_parse_arguments args "$@"
-	wf-call maximize_view "${args[window_id]}" 0 | _o_none
+	dbus-method maximize_view "${args[window_id]}" 0 | _o_none
 }
 
 function minimize_window {
@@ -27,7 +27,7 @@ function minimize_window {
 		[0:window_id]="$__WF_MSG_WINDOW_ID_DESCRIPTION"
 	)
 	__BAPt_parse_arguments args "$@"
-	wf-call minimize_view "${args[window_id]}" 1 | _o_none
+	dbus-method minimize_view "${args[window_id]}" 1 | _o_none
 }
 
 function unminimize_window {
@@ -37,7 +37,7 @@ function unminimize_window {
 		[0:window_id]="$__WF_MSG_WINDOW_ID_DESCRIPTION"
 	)
 	__BAPt_parse_arguments args "$@"
-	wf-call minimize_view "${args[window_id]}" 0 | _o_none
+	dbus-method minimize_view "${args[window_id]}" 0 | _o_none
 }
 
 function focus_window {
@@ -47,7 +47,7 @@ function focus_window {
 		[0:window_id]="$__WF_MSG_WINDOW_ID_DESCRIPTION"
 	)
 	__BAPt_parse_arguments args "$@"
-	wf-call focus_view "${args[window_id]}" 1 | _o_none
+	dbus-method focus_view "${args[window_id]}" 1 | _o_none
 }
 
 function unfocus_window {
@@ -57,7 +57,7 @@ function unfocus_window {
 		[0:window_id]="$__WF_MSG_WINDOW_ID_DESCRIPTION"
 	)
 	__BAPt_parse_arguments args "$@"
-	wf-call focus_view "${args[window_id]}" 0 | _o_none
+	dbus-method focus_view "${args[window_id]}" 0 | _o_none
 }
 
 function move_window_to_workspace {
@@ -69,5 +69,5 @@ function move_window_to_workspace {
 		[2:y]="y-cord of destination workspace"
 	)
 	__BAPt_parse_arguments args "$@"
-	wf-call change_workspace_view "${args[window_id]}" "${args[x]}" "${args[y]}" | _o_none
+	dbus-method change_workspace_view "${args[window_id]}" "${args[x]}" "${args[y]}" | _o_none
 }

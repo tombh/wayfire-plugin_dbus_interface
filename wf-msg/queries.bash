@@ -6,7 +6,7 @@ function get_all_window_ids {
 		[summary]="Get the IDs of all the current windows"
 	)
 	__BAPt_parse_arguments _ "$@"
-	wf-call query_view_vector_taskman_ids | _o_numbers
+	dbus-method query_view_vector_taskman_ids | _o_numbers
 }
 
 function get_window_title {
@@ -16,7 +16,7 @@ function get_window_title {
 		[0:window_id]="$__WF_MSG_WINDOW_ID_DESCRIPTION"
 	)
 	__BAPt_parse_arguments args "$@"
-	wf-call query_view_title "${args[window_id]}" | _o_string
+	dbus-method query_view_title "${args[window_id]}" | _o_string
 }
 
 function get_window_app {
@@ -26,7 +26,7 @@ function get_window_app {
 		[0:window_id]="$__WF_MSG_WINDOW_ID_DESCRIPTION"
 	)
 	__BAPt_parse_arguments args "$@"
-	wf-call query_view_app_id "${args[window_id]}" | _o_string
+	dbus-method query_view_app_id "${args[window_id]}" | _o_string
 }
 
 function get_current_output {
@@ -35,7 +35,7 @@ function get_current_output {
 		[summary]="Get the ID of the current output (usually a physical monitor)"
 	)
 	__BAPt_parse_arguments _ "$@"
-	wf-call query_active_output | _o_numbers
+	dbus-method query_active_output | _o_numbers
 }
 
 function get_current_workspace {
@@ -44,7 +44,7 @@ function get_current_workspace {
 		[summary]="Get the X,Y coords of the current workspace on the current output"
 	)
 	__BAPt_parse_arguments _ "$@"
-	wf-call query_output_workspace "$(get_current_output)" | _o_numbers
+	dbus-method query_output_workspace "$(get_current_output)" | _o_numbers
 }
 
 function get_window_workspace {
@@ -54,7 +54,7 @@ function get_window_workspace {
 		[0:window_id]="$__WF_MSG_WINDOW_ID_DESCRIPTION"
 	)
 	__BAPt_parse_arguments args "$@"
-	wf-call query_view_workspaces "${args[window_id]}" | _o_numbers
+	dbus-method query_view_workspaces "${args[window_id]}" | _o_numbers
 }
 
 function is_window_active {
@@ -64,7 +64,7 @@ function is_window_active {
 		[0:window_id]="$__WF_MSG_WINDOW_ID_DESCRIPTION"
 	)
 	__BAPt_parse_arguments args "$@"
-	wf-call query_view_active "${args[window_id]}" | _o_boolean
+	dbus-method query_view_active "${args[window_id]}" | _o_boolean
 }
 
 function get_all_windows {

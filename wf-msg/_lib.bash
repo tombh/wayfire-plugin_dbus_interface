@@ -76,9 +76,9 @@ function _debug {
 }
 
 function _join_by {
-	local d=${1-} f=${2-}
+	local delimeter=${1-} field=${2-}
 	if shift 2; then
-		printf %s "$f" "${@/#/$d}"
+		printf %s "$field" "${@/#/$delimeter}"
 	fi
 }
 

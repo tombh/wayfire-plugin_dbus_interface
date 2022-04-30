@@ -1,6 +1,6 @@
 # shellcheck shell=bash disable=2120
 
-function wf-call {
+function dbus-method {
 	local _
 	declare -A _=(
 		[summary]="Make a call to Wayfire's D-Bus interface"
