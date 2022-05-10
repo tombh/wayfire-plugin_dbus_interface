@@ -48,6 +48,8 @@ Subcommands:
   move_titled_window_to_workspace  Find a window by its app and title then move it to a workspace
   move_window_to_current_workspace Move window to current workspace
   peek_titled_window               Find a window and bring it to the current workspace
+  wait_for_window_creation         Wait for a window with the given title to come into existence
+  wait_for_window_title_change     Wait until a window changes its title to that provided
 
 Options:
   --help                           Show this help
