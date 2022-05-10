@@ -1,15 +1,18 @@
 # shellcheck shell=bash
 
-_LOG_IDENTIFIER="WF-UTILS"
-_PROGRAM_DESCRIPTION="Collection of general utilities for controling Wayfire"
+export _LOG_IDENTIFIER="WF-UTILS"
+export _PROGRAM_DESCRIPTION="Collection of general utilities for controling Wayfire"
+export DEFAULT_TIMEOUT=15
 
 function _wf-msg {
 	local args=("$@")
 
-	local result
-	result=$(wf-msg "${args[@]}")
+	while read -r line; do
+		if ! _is_empty_whitespace "$line"; then
+			echo "$line"
+		fi
+	done < <(wf-msg "${args[@]}")
 	test $? -eq 0 || _error "Error calling \`wf-msg\` ${args[*]}"
-	echo -n "$result"
 }
 
 function _jq {

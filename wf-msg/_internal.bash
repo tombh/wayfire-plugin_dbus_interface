@@ -16,12 +16,19 @@ function _clean {
 		-e "s/^(['\"]//g" \
 		-e "s/['\"],)$//g" \
 		-e "s/^(//g" \
-		-e "s/,)$//g"
+		-e "s/,)$//g" \
+		-e "s/)$//g" \
+		-e 's/uint32 //g'
 }
 
 function _escape_double_quotes {
 	local value=$1
 	echo -n "${value//\"/\\\"}"
+}
+
+function _escape_forward_slashes {
+	local value=$1
+	echo -n "$value" | sed 's/\//\\\//g'
 }
 
 function _o_numbers {

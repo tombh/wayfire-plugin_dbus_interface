@@ -85,3 +85,7 @@ function _join_by {
 function _trim {
 	sed -e 's/\n//g' | awk '{$1=$1};1'
 }
+
+function _is_empty_whitespace {
+	[[ -z "${1// /}" ]]
+}

@@ -8,7 +8,7 @@ function dbus-method {
 			cat <<-EOM
 				To see all the available commands and arguments, use:
 
-				  \`wf-msg wf-dbus-introspect\`
+				  \`wf-msg dbus-introspect\`
 			EOM
 		)"
 		[any]="Arguments to Wayfire D-Bus interface"
@@ -17,12 +17,9 @@ function dbus-method {
 
 	local method=$1
 	shift
-	local args=("$@")
+	local _args=("$@") args_with_commas result
 
-	local args_with_commas
-	local result
-
-	args_with_commas=$(_join_by , "${args[@]}")
+	args_with_commas=$(_join_by , "${_args[@]}")
 	_debug "Calling DBUS $method($args_with_commas)"
 
 	dbus_args=(
@@ -33,10 +30,10 @@ function dbus-method {
 		--method org.wayland.compositor."$method"
 	)
 
-	[ ${#args[@]} -gt 0 ] && dbus_args+=("${args[@]}")
+	[ ${#_args[@]} -gt 0 ] && dbus_args+=("${_args[@]}")
 
 	if ! result=$(gdbus "${dbus_args[@]}" 2>&1); then
-		_error "$result"
+		_error "D-Bus error ($method): $result"
 	else
 		echo "$result"
 	fi

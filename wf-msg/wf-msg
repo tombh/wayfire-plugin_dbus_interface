@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 trap "exit 1" TERM
+trap "kill 0" SIGINT
 export _TOP_PID=$$
 _INCLUDES_PATH=$(dirname "$(readlink -f "$0")")
 source "$_INCLUDES_PATH/_lib.bash"
