@@ -10,40 +10,45 @@
 #   	[--bar:flag]="A boolean option that doesn't take a value"
 #   	[--foobar]="An option that requires a value"
 #   )
-#   __BAPt_parse args "$@"
+#   BAPt_parse_arguments args "$@"
+#
 #   echo "foo is ${args[foo]}. bar is ${args[foo]}. foobar is ${args[foobar]}"
 # ```
 
 __BAPt_ERROR_PREFIX='Error parsing arguments'
 __BAPt_SCRIPT_NAME=$(basename "$0")
 
-function __BAPt_parse_arguments {
-	local -n _arg_defs="$1"
+function BAPt_parse_arguments {
+	local -n arg_defs="$1"
 	shift
 	local parent_args=("$@")
 	local usage option_definitions parsed parts positionals options
-	_arg_defs+=([--help:flag]="Show help")
+	arg_defs+=([--help:flag]="Show help")
 
 	# Why build $usage now rather than as and when it's needed?
-	# $_arg_defs, which is needded to build the usage string, is an associative array
+	# $arg_defs, which is needded to build the usage string, is an associative array
 	# which are hard to copy. So it's easier to maintain a copy of the prebuilt usage
-	# rather than a copy of $_arg_defs.
-	usage=$(__BAPt_build_usage _arg_defs)
+	# rather than a copy of $arg_defs.
+	usage=$(__BAPt_build_usage arg_defs)
 
 	if [[ ${parent_args[*]} = "--help" ]]; then
-		__BAPt_show_usage "$usage" 0
+		__BAPt_show_usage 0
 	fi
 
-	if [[ -n ${_arg_defs[any]} ]]; then
+	if [[ -n ${arg_defs[any]} ]]; then
 		if [[ -z ${parent_args[*]} ]]; then
 			echo "$__BAPt_ERROR_PREFIX: arguments expected" 1>&2
 			echo 1>&2
-			__BAPt_show_usage "$usage" 1
+			__BAPt_show_usage 1
 		fi
 		return 0
 	fi
 
-	option_definitions=$(__BAPt_get_option_definitions _arg_defs)
+	__BAPt_parse
+}
+
+function __BAPt_parse {
+	option_definitions=$(__BAPt_get_option_definitions)
 	if ! parsed=$(
 		getopt \
 			-n "$__BAPt_ERROR_PREFIX" \
@@ -51,7 +56,7 @@ function __BAPt_parse_arguments {
 			-- _ "${parent_args[@]}"
 	); then
 		echo
-		__BAPt_show_usage "$usage" 1
+		__BAPt_show_usage 1
 	fi
 
 	parts="$(echo "$parsed" | sed 's/ -- /\n/' | sed 's/ --$/\n/')"
@@ -59,18 +64,17 @@ function __BAPt_parse_arguments {
 	parts2=$(echo "$parts" | sed -n 2p)
 	[[ $parts2 = "''" ]] && parts2=""
 
-	if ! __BAPt_parse_positional_args _arg_defs "$parts2"; then
-		__BAPt_show_usage "$usage" 1
+	if ! __BAPt_parse_positional_args "$parts2"; then
+		__BAPt_show_usage 1
 	fi
 
-	if ! __BAPt_parse_options _arg_defs "$parts1"; then
-		__BAPt_show_usage "$usage" 1
+	if ! __BAPt_parse_options "$parts1"; then
+		__BAPt_show_usage 1
 	fi
 }
 
 function __BAPt_show_usage {
-	local usage=$1
-	local exit_code=$2
+	local exit_code=$1
 	if [[ $exit_code -gt 0 ]]; then
 		echo "$usage" >&2
 		exit "$exit_code"
@@ -81,14 +85,51 @@ function __BAPt_show_usage {
 }
 
 function __BAPt_build_usage {
-	local -n arg_defs_u="$1"
 	local calling_function=${FUNCNAME[2]}
-	local widest usage positionals=() options=() description line arg_list=()
+	local widest usage command_name positionals=() options=() description line arg_list=()
 
-	widest=$(__BAPt_find_widest arg_defs_u)
+	widest=$(__BAPt_find_widest)
 
-	for key in "${!arg_defs_u[@]}"; do
-		description="${arg_defs_u[$key]}"
+	__BAPt_extract_positionals_and_options
+
+	if [[ -n $calling_function ]]; then
+		command_name=$(basename "$calling_function")
+	else
+		command_name=$(basename "$__BAPt_SCRIPT_NAME")
+	fi
+
+	echo "Usage: $command_name ${arg_list[*]} [OPTIONS]"
+
+	if [[ -n ${arg_defs[summary]} ]]; then
+		echo
+		echo "${arg_defs[summary]}"
+	fi
+
+	if [[ ${#positionals} -gt 0 ]]; then
+		echo
+		echo "Arguments:"
+		for line in "${positionals[@]}"; do
+			echo "$line"
+		done
+	fi
+
+	if [[ ${#options} -gt 0 ]]; then
+		echo
+		echo "Options:"
+		for line in "${options[@]}"; do
+			echo "$line"
+		done
+	fi
+
+	if [[ -n ${arg_defs[details]} ]]; then
+		echo
+		echo "${arg_defs[details]}"
+	fi
+}
+
+function __BAPt_extract_positionals_and_options {
+	for key in "${!arg_defs[@]}"; do
+		description="${arg_defs[$key]}"
 		if [[ $key =~ ^[0-9]: ]]; then
 			name=${key/*:/}
 			index=${key//:*/}
@@ -108,47 +149,11 @@ function __BAPt_build_usage {
 			options+=("$line")
 		fi
 	done
-
-	if [[ -n $calling_function ]]; then
-		command_name=$(basename "$calling_function")
-	else
-		command_name=$(basename "$__BAPt_SCRIPT_NAME")
-	fi
-
-	echo "Usage: $command_name ${arg_list[*]} [OPTIONS]"
-
-	if [[ -n ${arg_defs_u[summary]} ]]; then
-		echo
-		echo "${arg_defs_u[summary]}"
-	fi
-
-	if [[ ${#positionals} -gt 0 ]]; then
-		echo
-		echo "Arguments:"
-		for line in "${positionals[@]}"; do
-			echo "$line"
-		done
-	fi
-
-	if [[ ${#options} -gt 0 ]]; then
-		echo
-		echo "Options:"
-		for line in "${options[@]}"; do
-			echo "$line"
-		done
-	fi
-
-	if [[ -n ${arg_defs_u[details]} ]]; then
-		echo
-		echo "${arg_defs_u[details]}"
-	fi
 }
 
 function __BAPt_find_widest {
-	local -n arg_defs_fw="$1"
-
 	local widest=0
-	for key in "${!arg_defs_fw[@]}"; do
+	for key in "${!arg_defs[@]}"; do
 		key=${key//:flag/}
 		width=${#key}
 		if [[ $width -gt $widest ]]; then
@@ -164,14 +169,13 @@ function __BAPt_find_widest {
 # to:
 #   "foo:,boolme"
 function __BAPt_get_option_definitions {
-	local -n arg_defs_gop="$1"
 	local value option_defs_string option_defs_array=()
 
-	for key in "${!arg_defs_gop[@]}"; do
+	for key in "${!arg_defs[@]}"; do
 		if [[ ! $key =~ ^-- ]]; then
 			continue
 		fi
-		value="${arg_defs_gop[$key]}"
+		value="${arg_defs[$key]}"
 		key="${key//--/}"
 		if [[ ! $key =~ ":flag" ]]; then
 			key="$key:"
@@ -186,17 +190,16 @@ function __BAPt_get_option_definitions {
 }
 
 function __BAPt_parse_positional_args {
-	local -n arg_defs_ppa="$1"
-	local parsed=$2
+	local parsed=$1
 	declare -a "positionals=($parsed)"
 
 	local index name arity=0
-	for key in "${!arg_defs_ppa[@]}"; do
+	for key in "${!arg_defs[@]}"; do
 		if [[ $key =~ ^[0-9]: ]]; then
 			index=${key//:*/}
 			name=${key/*:/}
-			arg_defs_ppa["$name"]="${positionals[index]}"
-			unset 'arg_defs_ppa['"$key"']'
+			arg_defs["$name"]="${positionals[index]}"
+			unset 'arg_defs['"$key"']'
 			arity=$((arity + 1))
 		fi
 	done
@@ -209,8 +212,7 @@ function __BAPt_parse_positional_args {
 }
 
 function __BAPt_parse_options {
-	local -n arg_defs_po="$1"
-	local parsed=$2
+	local parsed=$1
 	local value name
 	declare -a "options=($parsed)"
 
@@ -218,13 +220,13 @@ function __BAPt_parse_options {
 	for item in "${options[@]}"; do
 		if [[ $item =~ ^-- ]]; then
 			name=${item/*--/}
-			if [[ -n ${arg_defs_po[$item]} ]]; then
+			if [[ -n ${arg_defs[$item]} ]]; then
 				value=${options[(($index + 1))]}
 			else
 				value=true
 			fi
-			arg_defs_po["$name"]="$value"
-			unset 'arg_defs_po['"$item"']'
+			arg_defs["$name"]="$value"
+			unset 'arg_defs['"$item"']'
 		fi
 		index=$((index + 1))
 	done

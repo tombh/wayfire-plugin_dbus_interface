@@ -5,7 +5,7 @@ function get_all_window_ids {
 	declare -A _=(
 		[summary]="Get the IDs of all the current windows"
 	)
-	__BAPt_parse_arguments _ "$@"
+	BAPt_parse_arguments _ "$@"
 	dbus-method query_view_vector_taskman_ids | _o_numbers
 }
 
@@ -15,7 +15,7 @@ function get_window_title {
 		[summary]="Get the title of the given window"
 		[0:window_id]="$__WF_MSG_WINDOW_ID_DESCRIPTION"
 	)
-	__BAPt_parse_arguments args "$@"
+	BAPt_parse_arguments args "$@"
 	dbus-method query_view_title "${args[window_id]}" | _o_string
 }
 
@@ -25,7 +25,7 @@ function get_window_app {
 		[summary]="Get the application that launched the given window"
 		[0:window_id]="$__WF_MSG_WINDOW_ID_DESCRIPTION"
 	)
-	__BAPt_parse_arguments args "$@"
+	BAPt_parse_arguments args "$@"
 	dbus-method query_view_app_id "${args[window_id]}" | _o_string
 }
 
@@ -34,7 +34,7 @@ function get_current_output {
 	declare -A _=(
 		[summary]="Get the ID of the current output (usually a physical monitor)"
 	)
-	__BAPt_parse_arguments _ "$@"
+	BAPt_parse_arguments _ "$@"
 	dbus-method query_active_output | _o_numbers
 }
 
@@ -43,7 +43,7 @@ function get_current_workspace {
 	declare -A _=(
 		[summary]="Get the X,Y coords of the current workspace on the current output"
 	)
-	__BAPt_parse_arguments _ "$@"
+	BAPt_parse_arguments _ "$@"
 	dbus-method query_output_workspace "$(get_current_output)" | _o_numbers
 }
 
@@ -53,7 +53,7 @@ function get_window_workspace {
 		[summary]="Get the X,Y coords of the given window"
 		[0:window_id]="$__WF_MSG_WINDOW_ID_DESCRIPTION"
 	)
-	__BAPt_parse_arguments args "$@"
+	BAPt_parse_arguments args "$@"
 	dbus-method query_view_workspaces "${args[window_id]}" | _o_numbers
 }
 
@@ -63,7 +63,7 @@ function is_window_active {
 		[summary]="Is the given window ID active? (I think that means focussed)"
 		[0:window_id]="$__WF_MSG_WINDOW_ID_DESCRIPTION"
 	)
-	__BAPt_parse_arguments args "$@"
+	BAPt_parse_arguments args "$@"
 	dbus-method query_view_active "${args[window_id]}" | _o_boolean
 }
 
@@ -73,7 +73,7 @@ function get_all_windows {
 		[summary]="Get the full details of all current windows"
 		[--use-cache:flag]="Use cached results, or create cache if it doesn't already exist"
 	)
-	__BAPt_parse_arguments args "$@"
+	BAPt_parse_arguments args "$@"
 
 	local cache_name="get_all_windows"
 	if [[ -n ${args[use-cache]} ]]; then

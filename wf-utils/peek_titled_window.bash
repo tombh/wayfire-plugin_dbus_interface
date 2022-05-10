@@ -17,7 +17,7 @@ function peek_titled_window {
 		[0:app]="Application ID, eg; 'firefox'"
 		[1:titlish]="Regex to match title of window"
 	)
-	__BAPt_parse_arguments args "$@"
+	BAPt_parse_arguments args "$@"
 
 	local window is_active
 	window=$(find_titled_window "${args[app]}" "${args[titlish]}")

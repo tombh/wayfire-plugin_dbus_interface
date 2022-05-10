@@ -12,7 +12,7 @@ function move_titled_window_to_workspace {
 		[--on-creation:flag]="Whether to first wait for the window to be created"
 		[--wait-for-title:flag]="Whether to wait for the title to change"
 	)
-	__BAPt_parse_arguments args "$@"
+	BAPt_parse_arguments args "$@"
 
 	local window timeout="${args[timeout]:-$DEFAULT_TIMEOUT}"
 	window=$(find_titled_window "${args[app]}" "${args[titlish]}" --allow-absence)

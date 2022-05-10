@@ -5,7 +5,7 @@ function _help {
 	declare -A _=(
 		[summary]="Show this help text"
 	)
-	__BAPt_parse_arguments _ "$@"
+	BAPt_parse_arguments _ "$@"
 
 	local sub_commands widest
 	readarray -t sub_commands <<<"$(_get_all_function_names | _exclude_private_functions)"
@@ -45,7 +45,7 @@ function _get_all_function_names {
 }
 
 function _exclude_private_functions {
-	grep -v -e '^_'
+	grep -v -e '^_' -e '^BAPt'
 }
 
 function _get_contents_of_function {

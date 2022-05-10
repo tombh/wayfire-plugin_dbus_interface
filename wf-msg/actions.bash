@@ -6,7 +6,7 @@ function maximize_window {
 		[summary]="Maximize the given window"
 		[0:window_id]="$__WF_MSG_WINDOW_ID_DESCRIPTION"
 	)
-	__BAPt_parse_arguments args "$@"
+	BAPt_parse_arguments args "$@"
 	dbus-method maximize_view "${args[window_id]}" 1 | _o_none
 }
 
@@ -16,7 +16,7 @@ function unmaximize_window {
 		[summary]="Reize window to size before previous maximization"
 		[0:window_id]="$__WF_MSG_WINDOW_ID_DESCRIPTION"
 	)
-	__BAPt_parse_arguments args "$@"
+	BAPt_parse_arguments args "$@"
 	dbus-method maximize_view "${args[window_id]}" 0 | _o_none
 }
 
@@ -26,7 +26,7 @@ function minimize_window {
 		[summary]="Minimize the given window"
 		[0:window_id]="$__WF_MSG_WINDOW_ID_DESCRIPTION"
 	)
-	__BAPt_parse_arguments args "$@"
+	BAPt_parse_arguments args "$@"
 	dbus-method minimize_view "${args[window_id]}" 1 | _o_none
 }
 
@@ -36,7 +36,7 @@ function unminimize_window {
 		[summary]="Resize window to size before previous minimization"
 		[0:window_id]="$__WF_MSG_WINDOW_ID_DESCRIPTION"
 	)
-	__BAPt_parse_arguments args "$@"
+	BAPt_parse_arguments args "$@"
 	dbus-method minimize_view "${args[window_id]}" 0 | _o_none
 }
 
@@ -46,7 +46,7 @@ function focus_window {
 		[summary]="Focus the given window"
 		[0:window_id]="$__WF_MSG_WINDOW_ID_DESCRIPTION"
 	)
-	__BAPt_parse_arguments args "$@"
+	BAPt_parse_arguments args "$@"
 	dbus-method focus_view "${args[window_id]}" 1 | _o_none
 }
 
@@ -56,7 +56,7 @@ function unfocus_window {
 		[summary]="Return window to focus state before previous focus"
 		[0:window_id]="$__WF_MSG_WINDOW_ID_DESCRIPTION"
 	)
-	__BAPt_parse_arguments args "$@"
+	BAPt_parse_arguments args "$@"
 	dbus-method focus_view "${args[window_id]}" 0 | _o_none
 }
 
@@ -68,6 +68,6 @@ function move_window_to_workspace {
 		[1:x]="x-cord of destination workspace"
 		[2:y]="y-cord of destination workspace"
 	)
-	__BAPt_parse_arguments args "$@"
+	BAPt_parse_arguments args "$@"
 	dbus-method change_workspace_view "${args[window_id]}" "${args[x]}" "${args[y]}" | _o_none
 }

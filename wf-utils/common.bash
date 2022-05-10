@@ -6,7 +6,7 @@ function minimize_window_on_unfocus {
 		[summary]="Minimise a window once it becomes unfoccused"
 		[0:window_id]="Window ID. See something like \`find_titled_window\`"
 	)
-	__BAPt_parse_arguments args "$@"
+	BAPt_parse_arguments args "$@"
 
 	# TODO: use D-Bus subscribes
 	while [[ "$(_wf-msg is_window_active "${args[window_id]}")" == "false" ]]; do
@@ -26,7 +26,7 @@ function find_titled_window {
 		[1:titlish]='Regex to match title of window'
 		[--allow-absence:flag]="Don't error if window not found"
 	)
-	__BAPt_parse_arguments args "$@"
+	BAPt_parse_arguments args "$@"
 
 	local query=".[] |
 		select(
@@ -75,7 +75,7 @@ function move_window_to_current_workspace {
 		[summary]="Move window to current workspace"
 		[0:window_id]="Window ID. See something like \`find_titled_window\`"
 	)
-	__BAPt_parse_arguments args "$@"
+	BAPt_parse_arguments args "$@"
 
 	local current_workspace x y
 	current_workspace="$(_wf-msg get_current_workspace)"
@@ -92,7 +92,7 @@ function wait_for_window_title_change {
 		[1:titlish]='Regex to match title of window'
 		[--timeout]="How long to wait until quitting, default 15 seconds"
 	)
-	__BAPt_parse_arguments args "$@"
+	BAPt_parse_arguments args "$@"
 
 	local app title window_id timeout="${args[timeout]:-$DEFAULT_TIMEOUT}"
 
@@ -118,7 +118,7 @@ function wait_for_window_creation {
 		[1:titlish]='Regex to match title of window'
 		[--timeout]="How long to wait until quitting, default 15 seconds"
 	)
-	__BAPt_parse_arguments args "$@"
+	BAPt_parse_arguments args "$@"
 
 	local app title window_id timeout="${args[timeout]:-$DEFAULT_TIMEOUT}"
 

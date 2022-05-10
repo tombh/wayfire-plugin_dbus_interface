@@ -13,7 +13,7 @@ function dbus-method {
 		)"
 		[any]="Arguments to Wayfire D-Bus interface"
 	)
-	__BAPt_parse_arguments _ "$@"
+	BAPt_parse_arguments _ "$@"
 
 	local method=$1
 	shift
@@ -53,7 +53,7 @@ function dbus-signal {
 		[0:signal]="Name of signal to monitor"
 		[--timeout]="How long to wait until quitting, default 15 seconds"
 	)
-	__BAPt_parse_arguments args "$@"
+	BAPt_parse_arguments args "$@"
 
 	local prefix timeout="${args[timeout]:-15}"
 	prefix=$(
@@ -83,7 +83,7 @@ function dbus-introspect {
 	declare -A _=(
 		[summary]="Returns XML of all the available Wayfire D-Bus methods and signals"
 	)
-	__BAPt_parse_arguments _ "$@"
+	BAPt_parse_arguments _ "$@"
 
 	dbus-send \
 		--session \
