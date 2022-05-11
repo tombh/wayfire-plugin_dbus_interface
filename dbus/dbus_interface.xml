@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<wayfire>
-	<plugin name="dbus_interface">
-	<_short>DBus Interface </_short>
-	<_long>DBus Interface @ org.wayland.compositor</_long>
-	<category>Desktop</category>
-	</plugin>
-</wayfire>
