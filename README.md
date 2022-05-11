@@ -53,6 +53,36 @@ Options:
 
 I'd hope that `wf-msg` and `wf-utils` could find a home in either the [D-Bus plugin](https://github.com/damianatorrpm/wayfire-plugin_dbus_interface) repo or even Wayfire's own [wayfire-plugins-extra](https://github.com/WayfireWM/wayfire-plugins-extra) repo
 
+### Examples
+
+Hotkey for specfic window:
+```ini
+# Unconditionally focus a Firefox window with a translation tab.
+# It doesn't create the Firefox window, just focusses a pre-existing one.
+binding_toggle_translator = <super> KEY_T
+command_toggle_translator = wf-utils peek_titled_window firefox 'DeepL Translate'
+```
+
+Autostart windows to specific layout:
+```sh
+# When a browser window contains multiple tabs you need an extension to insert a consistent,
+# searchable string token in the title in order for `wf-utils` to find it. For Firefox there is:
+# https://addons.mozilla.org/en-US/firefox/addon/window-titler
+# The `--wait-for-title` flag is needed because it can take a few moments for Firefox to update
+# its titles.
+wf-utils move_titled_window_to_workspace firefox 'Projects' 0 0 --wait-for-title --timeout 60 &
+wf-utils move_titled_window_to_workspace firefox 'Email etc' 0 1 --wait-for-title --timeout 60 &
+wf-utils move_titled_window_to_workspace firefox 'System' 0 2 --wait-for-title --timeout 60 &
+wf-utils move_titled_window_to_workspace firefox 'Entertainment' 2 1 --wait-for-title --timeout 60 &
+wf-utils move_titled_window_to_workspace firefox 'Remote' 2 2 --wait-for-title --timeout 60 &
+firefox &
+disown
+firefox --private-window https://www.deepl.com/translator &
+disown
+```
+
+
+
 
 ## Requirements
 * @soppelmann's fork (it fixes damianatorrpm#46) of the [Wayfire D-Bus plugin](https://github.com/soppelmann/wayfire-plugin_dbus_interface)
